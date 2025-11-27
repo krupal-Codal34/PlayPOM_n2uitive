@@ -1,0 +1,176 @@
+name: Development -Exmaple test automation Execution
+# for linting - https://rhysd.github.io/actionlint/
+on:
+  push:
+    #branches: [dev]
+    # tags:
+    #   - "v1.0.0" # Tag like v1.0.0
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Select test tag to run"
+        required: true
+        default: "All"
+        type: choice
+        options:
+          - All
+          - SANITY
+      environment:
+        description: "Select environment"
+        required: false
+        default: STAGE
+        type: choice
+        options:
+          #- QA
+          - STAGE
+
+env:
+  PROJECT_ID: "cpd-stage-394521"
+  GAR_LOCATION: "us-central1"
+  GAR_CDN_BUCKET: "costplusdrugs-test-automation"
+  GAR_LB_NAME: "mccpd-test-automation"
+
+jobs:
+  test_automation_execution:
+    name: Test Automation Execution
+    runs-on: [self-hosted, test-automation]
+    environment:
+      name: ${{ github.event.inputs.environment || 'STAGE' }}
+
+    # This are the config that we need in playwright.config.ts which it will automatically take as in .js
+    env:
+      notificationFromEmail: ${{ secrets.NOTIFICATION_FROM_EMAIL }}
+      notificationFromPwd: ${{ secrets.NOTIFICATION_FROM_PWD }}
+      # sendEmailAddressesArray: ${{ secrets.SEND_EMAIL_ADDRESSES_ARRAY }}
+      # & in ProjectConfig.properties based on environment - this needs to be written
+      FIREBASE_APPCHECK_DEBUG_TOKEN: ${{ secrets.FIREBASE_APPCHECK_DEBUG_TOKEN }}
+      RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+      baseURL: ${{ secrets.BASE_URL }}
+      adminBaseURL: ${{ secrets.ADMIN_BASE_URL }}
+      executionReportURL: ${{ secrets.EXECUTION_REPORT_URL_DEV }}
+      internal2FAUser: ${{ secrets.INTERNAL_2FA_USER }}
+      internal2FAPwd: ${{ secrets.INTERNAL_2FA_PWD }}
+      validUsername: ${{ secrets.VALID_USERNAME }}
+      validPassword: ${{ secrets.VALID_PASSWORD }}
+      adminUsername: ${{ secrets.ADMIN_USERNAME }}
+      adminPassword: ${{ secrets.ADMIN_PASSWORD }}
+
+    strategy:
+      matrix:
+        tag: ["ALL, SANITY"]
+        # once we have defined user input then ${{ github.event.inputs.tag || 'SANITY' }}
+    steps:
+      # - name: Echo environment variables
+      #   run: |
+      #     echo "notificationFromEmail=${{ env.notificationFromEmail }}"
+      #     echo "notificationFromPwd=${{ env.notificationFromPwd }}"
+      #     echo "sendEmailAddressesArray=${{ env.sendEmailAddressesArray }}"
+      #     echo "FIREBASE_APPCHECK_DEBUG_TOKEN=${{ env.FIREBASE_APPCHECK_DEBUG_TOKEN }}"
+      #     echo "baseURL=${{ env.baseURL }}"
+      #     echo "internal2FAUser=${{ env.internal2FAUser }}"
+      #     echo "internal2FAPwd=${{ env.internal2FAPwd }}"
+      #     echo "validUsername=${{ env.validUsername }}"
+      #     echo "validPassword=${{ env.validPassword }}"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: Install dependencies
+        run: npm ci
+
+        # For Playwright to work with the latest browsers
+      - name: Install Playwright
+        run: npm run installBrowsers
+
+      - name: Google Auth
+        id: auth
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+        with:
+          version: ">= 363.0.0"
+
+      - name: Copy Data history file from GCS bucket
+        if: github.ref == 'refs/heads/main'
+        run: |
+          gsutil cp gs://${{ env.GAR_CDN_BUCKET }}/dev/ortoni-data-history.sqlite  generated/reports/ortoni-html
+
+        # For Gmail Reader actions to work in PlayPOM in CI encoded with base64 encoded
+      - name: Decode Gmail credentials
+        run: |
+          mkdir -p ./fixtures
+          echo '${{ secrets.GMAIL_CREDENTIALS_JSON }}' > ./fixtures/credentials.json
+          echo '${{ secrets.GMAIL_TOKEN_JSON }}' > ./fixtures/token.json
+
+      - name: Replace the values in  ProjectConfig.properties for the execution
+        run: |
+          sed -i \
+          -e "s|FIREBASE_APPCHECK_DEBUG_TOKEN=.*|FIREBASE_APPCHECK_DEBUG_TOKEN=${{ env.FIREBASE_APPCHECK_DEBUG_TOKEN }}|" \
+          -e "s|RECAPTCHA_SITE_KEY=.*|RECAPTCHA_SITE_KEY=${{ env.RECAPTCHA_SITE_KEY }}|" \
+          -e "s|baseURL=.*|baseURL=${{ env.baseURL }}|" \
+          -e "s|adminBaseURL=.*|adminBaseURL=${{ env.adminBaseURL }}|" \
+          -e "s|executionReportURL=.*|executionReportURL=${{ env.executionReportURL }}|" \
+          -e "s|internal2FAUser=.*|internal2FAUser=${{ env.internal2FAUser }}|" \
+          -e "s|internal2FAPwd=.*|internal2FAPwd=${{ env.internal2FAPwd }}|" \
+          -e "s|validUsername=.*|validUsername=${{ env.validUsername }}|" \
+          -e "s|validPassword=.*|validPassword=${{ env.validPassword }}|" \
+          -e "s|adminUsername=.*|adminUsername=${{ env.adminUsername }}|" \
+          -e "s|adminPassword=.*|adminPassword=${{ env.adminPassword }}|" \
+          ProjectConfig.properties
+
+      - name: Run PlayPOM-Template tests automation based on given tag & environment
+        run: |
+          if [ -z "${{ github.event.inputs.tag }}" ] || [ "${{ github.event.inputs.tag }}" = "All" ]; then
+            echo "🧪 Running all tests (no tag provided)"
+            npm run all
+          else
+            echo "🏷️ Running tests with tag: ${{ github.event.inputs.tag }}"
+            npx playwright test -g "${{ github.event.inputs.tag }}"
+          fi
+
+      - name: Upload generated artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-report
+          path: generated/reports/ortoni-html
+          include-hidden-files: true
+
+      - name: Google Storage Upload
+        id: upload1
+        continue-on-error: true
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          parent: false
+          path: "generated/reports/ortoni-html"
+          destination: "${{ env.GAR_CDN_BUCKET }}/dev/releases/${{ github.ref_name }}-${{ github.sha }}"
+
+      - name: Remove existing "dev" folder
+        run: |
+          gsutil -m rm -r "gs://${{ env.GAR_CDN_BUCKET }}/dev/**" || true
+
+      - name: Google Storage Upload
+        id: upload2
+        continue-on-error: true
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          parent: false
+          path: "generated/reports/ortoni-html"
+          destination: "${{ env.GAR_CDN_BUCKET }}/dev"
+
+      - name: "Invalidate FE Cache"
+        run: 'gcloud compute url-maps invalidate-cdn-cache ${{ env.GAR_LB_NAME }} --path "/*" '
+
+      - name: Add Production release note
+        run: |
+          echo '## 📊 Summary Report' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo 'The report has been successfully published.' >> $GITHUB_STEP_SUMMARY
+          echo '- **Link:** https://automation.stagecostplusdrugs.dev/dev/' >> $GITHUB_STEP_SUMMARY

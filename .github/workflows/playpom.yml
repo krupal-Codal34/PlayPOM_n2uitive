@@ -1,0 +1,73 @@
+name: PlayPOM-Template Unit Testing Execution
+# for linting - https://rhysd.github.io/actionlint/
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Select test tag to run"
+        required: true
+        default: "All"
+        type: choice
+        options:
+          - All
+          - SANITY
+
+jobs:
+  test_automation_execution:
+    runs-on: ubuntu-latest
+
+    env:
+      notificationFromEmail: ${{ secrets.NOTIFICATION_FROM_EMAIL }}
+      notificationFromPwd: ${{ secrets.NOTIFICATION_FROM_PWD }}
+      # sendEmailAddressesArray: ${{ secrets.SEND_EMAIL_ADDRESSES_ARRAY }}
+
+    # strategy:
+    #   matrix:
+    #     tag: ["SANITY"]
+    # once we have defined user input then ${{ github.event.inputs.tag || 'UI' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: Install dependencies
+        run: npm i
+
+        # For Playwright to work with the latest browsers
+      - name: Install Playwright
+        run: npm run installBrowsers
+
+        # For Gmail Reader actions to work in PlayPOM in CI
+      - name: Decode Gmail credentials
+        run: |
+          mkdir -p ./fixtures
+          echo "${{ secrets.GMAIL_CREDENTIALS_JSON }}" | base64 -d > ./fixtures/credentials.json
+          echo "${{ secrets.GMAIL_TOKEN_JSON }}" | base64 -d > ./fixtures/token.json
+
+      - name: Run PlayPOM-Template tests based on given tag
+        run: |
+          if [ -z "${{ github.event.inputs.tag }}" ] || [ "${{ github.event.inputs.tag }}" = "All" ]; then
+            echo "🧪 Running all tests (no tag provided)"
+            npm run all
+          else
+            echo "🏷️ Running tests with tag: ${{ github.event.inputs.tag }}"
+            npx playwright test -g "${{ github.event.inputs.tag }}"
+          fi
+
+      - name: Wait for logs to complet
+        run: sleep 10s
+        shell: bash
+
+      - name: Upload generated artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-logs
+          path: generated/logs/
+          include-hidden-files: true

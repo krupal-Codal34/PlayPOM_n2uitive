@@ -1,0 +1,38 @@
+{
+  "name": "PlayPOM-Template",
+  "version": "1.0.0",
+  "description": "Template project demonstrating PlayPOM framework usage",
+  "type": "module",
+  "scripts": {
+    "installBrowsers": "npx playwright install && npx playwright install-deps",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write .",
+    "debug": "npx playwright test --debug",
+    "debugTest": "npx playwright test %npm_config_test% --debug",
+    "debugTestProject": "npx playwright test --project=%npm_config_project% %npm_config_test% --debug",
+    "all": "npx playwright test",
+    "tag": "npx playwright test -g %npm_config_tag%",
+    "givenTest": "npx playwright test %npm_config_test%",
+    "givenProject": "npx playwright test --project=%npm_config_project%",
+    "givenTestProject": "npx playwright test --headed --project=%npm_config_project% %npm_config_test%",
+    "showReport": "npx playwright show-report .\\generated\\reports\\HTML_Report\\",
+    "showOReport": "npx ortoni-report show-report -d .\\generated\\reports\\ortoni-html\\ -f report.html",
+    "codegen": "npx playwright codegen",
+    "codegen:url": "npx playwright codegen %npm_config_url%"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "automation",
+    "playpom"
+  ],
+  "author": "Bhavik Tikudiya",
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "playpom": "file:./fixtures/playpom-1.0.0.tgz"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

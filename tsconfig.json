@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "node16", // for playpom imports
+    "moduleResolution": "node16", // for playpom imports
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "sourceMap": true,
+    "inlineSources": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["pages/*"],
+      "@tests/*": ["tests/*"],
+      "@data/*": ["Data/*"]
+    }
+  },
+  "include": ["tests/**/*", "pages/**/*", "playwright.config.ts"],
+  "exclude": ["node_modules"]
+}

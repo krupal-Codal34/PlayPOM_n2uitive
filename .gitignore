@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/generated/result_files/
+/generated/logs/
+/generated/reports/HTML_Report/
+/generated/reports/ortoni-html/*
+!/generated/reports/ortoni-html/gocodal.jpg
+/generated/
+# for gmail credentials to be ignored in commit and need to be created in local
+/fixtures/credentials.json
+/fixtures/token.json
+# distribution & local debugging config files
+/dist
+/.vscode
