@@ -9,6 +9,9 @@ import MenuOption from "@pages/n2/constants/MenuOption.js";   // unused? conside
 import LoginPage from "@pages/n2/LoginPage.js";
 import HomePage from "@pages/n2/Home/HomePage.js";
 import UploadStatement from "@pages/n2/Home/UploadFiles/UploadStatement.js";
+import ViewPage from "@pages/n2/Home/View/ViewPage.js";
+import CommonActions from "@pages/n2/CommonActions.js";
+
 
 // Base test setup
 import { projectTest as test } from "@tests/Setup/BaseSuite.js";
@@ -20,9 +23,13 @@ import * as path from "path";
 // ----------------------------------------------------------------------------
 // Global strongly-typed objects (initialized in beforeEach)
 // ----------------------------------------------------------------------------
-let loginPage: LoginPage;        
+let loginPage: LoginPage;
 let homePage: HomePage;
 let uploadStatement: UploadStatement;
+let viewPage: ViewPage;
+let commonActions: CommonActions;
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +67,11 @@ test.describe(
             loginPage = new LoginPage(page);
             homePage = new HomePage(page);
             uploadStatement = new UploadStatement(page);
+            viewPage = new ViewPage(page);
+            commonActions = new CommonActions(page);
+
+
+            // Launch app
 
             await loginPage.launch(INPUT.getInput("baseURL"));
             await loginPage.doLogin(INPUT.getInput("username"), INPUT.getInput("password"));
@@ -125,6 +137,16 @@ test.describe(
 
                 await test.step("Fill out the form with required details", async () => {
                     await uploadStatement.fillForm(page);
+                });
+
+                await test.step("Verify filled form details", async () => {
+                    await homePage.verifyFilledFormDetails();
+                });
+
+                await test.step("Verify More details", async () => {
+                    await homePage.navigateToViewDetails();
+                    const formdata = await commonActions.readJson('./data/Login/Upload/formdata.json');
+                    await viewPage.verifyDetails(formdata, resolveUploadFile(FILES.MP3));
                 });
             }
         );

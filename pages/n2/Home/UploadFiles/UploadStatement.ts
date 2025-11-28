@@ -33,9 +33,7 @@ export default class UploadStatement extends CommonActions {
     await this.ASSERT.hardAssertValue(valid_AMessage, ValueAssertionType.TO_BE, valid_EMessage, "Verification of Valid file extension");
 
   }
-
-
-
+  
   async validateInvalidfile(filePath: string): Promise<void> {
 
     this.uploadFile(filePath)
@@ -97,10 +95,10 @@ export default class UploadStatement extends CommonActions {
     //Click on Upload
     const btn_Upload: Locator = this.locators.btn_Upload;
     await btn_Upload.waitFor({ state: 'visible' });
-    // await btn_Upload.click();
+    await btn_Upload.click();
 
     const verifyForm: Locator = this.locators.verifyForm;
-    // await this.ASSERT.hardAssert(verifyForm, AssertionType.TO_HAVE_TEXT, "Upload Completed!", "Verification of form filled.");    
+    await this.ASSERT.hardAssert(verifyForm, AssertionType.TO_HAVE_TEXT, "Upload Completed!", "Verification of form filled.");    
   }
 
   
@@ -134,10 +132,14 @@ export default class UploadStatement extends CommonActions {
     inter_LastName: INTER_LastName.trim(),
     drp_Type: DRP_Type.trim(),
     INSfirstName: insfirstName.trim(),
-    INSlastName: inslastName.trim()
+    INSlastName: inslastName.trim(),
+    Adjuster: "Arpit Desai",
+    Office: "Shared Services (Codal)"
   };
 
-  await this.writeDataToJson(data, 'formdata.json', 'Data/Login/Upload');
+ const file = 'Data/Login/Upload' 
+ await this.writeDataToJson(data, 'formdata.json', file);
+ const readBack = await this.readJson('formdata.json',file);
 }
 
 

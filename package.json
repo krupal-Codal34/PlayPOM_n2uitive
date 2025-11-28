@@ -33,6 +33,7 @@
     "playpom": "file:./fixtures/playpom-1.0.0.tgz"
   },
   "dependencies": {
-    "@playwright/test": "^1.55.0"
+    "@playwright/test": "^1.55.0",
+    "get-audio-duration": "^4.0.1"
   }
 }

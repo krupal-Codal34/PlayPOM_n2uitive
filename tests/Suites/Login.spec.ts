@@ -7,12 +7,6 @@
  *  - Login with invalid password
  *  - Login with unregistered email
  *  - Login with empty credentials
- *
- * This suite follows international coding standards:
- *  - Strong TypeScript typing
- *  - Page Object Model (POM) usage
- *  - Clear test steps with Playwright's test.step()
- *  - Readable scenario grouping
  */
 
 import MenuOption from "@pages/n2/constants/MenuOption.js";

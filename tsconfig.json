@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "node16", // for playpom imports
+    "module": "node18", // for playpom imports
     "moduleResolution": "node16", // for playpom imports
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "strict": false,
     "sourceMap": true,
     "inlineSources": true,
