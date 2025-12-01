@@ -32,7 +32,7 @@ export default class CommonActions extends BasePage {
      * @param data         Object or array to save
      * @param fileName     File name (auto-add .json)
      * @param outputDir    Target folder (default: test-output)
-     */
+     *//*
   async writeDataToJson(
     data: object | Array<any>,
     fileName: string,
@@ -81,7 +81,7 @@ export default class CommonActions extends BasePage {
    *
    * @param fileName   JSON file name
    * @param outputDir  Directory (default: test-output)
-   */
+   *//*
    async readJson(
     fileName: string,
     outputDir: string = './'
@@ -106,10 +106,10 @@ export default class CommonActions extends BasePage {
   /**
    * Generate unique JSON filename to avoid parallel-worker conflicts.
    * Recommended for Playwright parallel runs.
-   */
+   *//*
   async uniqueFile(testId: string, baseName: string) {
     return `${baseName}_${testId}.json`;
-  }
+  }*/
 }
 
 

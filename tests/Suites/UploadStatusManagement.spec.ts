@@ -14,7 +14,9 @@ import CommonActions from "@pages/n2/CommonActions.js";
 
 
 // Base test setup
-import { projectTest as test } from "@tests/Setup/BaseSuite.js";
+// import { projectTest as test } from "@tests/Setup/BaseSuite.js";
+import { authenticatedTest as test } from "@tests/Setup/BaseSuite.js";
+
 
 // Node utilities
 import { fileURLToPath } from "url";
@@ -71,10 +73,13 @@ test.describe(
             commonActions = new CommonActions(page);
 
 
-            // Launch app
-
+           /* // Launch app
+            
             await loginPage.launch(INPUT.getInput("baseURL"));
-            await loginPage.doLogin(INPUT.getInput("username"), INPUT.getInput("password"));
+            await loginPage.doLogin(INPUT.getInput("username"), INPUT.getInput("password"));*/
+
+            await page.goto(INPUT.getInput("homeURL"));
+
         });
 
         // ====================================================================
@@ -124,7 +129,7 @@ test.describe(
         // ====================================================================
         test(
             "@SANITY Should upload file, fill form & verify required field validations",
-            async ({ page }) => {
+            async ({ page,INPUT }) => {
 
                 await test.step("Navigate to Upload Statements module", async () => {
                     await homePage.navigateToUploadStatement();
@@ -140,13 +145,16 @@ test.describe(
                 });
 
                 await test.step("Verify filled form details", async () => {
-                    await homePage.verifyFilledFormDetails();
+                    const formdata = INPUT.getAllJsonData();
+                    const jsonData = JSON.parse(formdata);
+                    await homePage.verifyFilledFormDetails(jsonData);
                 });
 
                 await test.step("Verify More details", async () => {
-                    await homePage.navigateToViewDetails();
-                    const formdata = await commonActions.readJson('./data/Login/Upload/formdata.json');
-                    await viewPage.verifyDetails(formdata, resolveUploadFile(FILES.MP3));
+                    await homePage.navigateToViewDetails(INPUT.getJsonValue("ClaimNumber"));
+                    const formdata = INPUT.getAllJsonData();
+                    const jsonData = JSON.parse(formdata);
+                    await viewPage.verifyDetails(jsonData, resolveUploadFile(FILES.MP3));
                 });
             }
         );

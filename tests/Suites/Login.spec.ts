@@ -1,3 +1,10 @@
+// ============================================================================
+// Test Suite: File Upload & Form Submission Status Management
+// Author: <Krupalsinh Chavda>
+// Standard: TypeScript + Playwright International Automation Coding Guidelines
+// ============================================================================
+
+
 /**
  * @file LoginSuite.spec.ts
  * @description

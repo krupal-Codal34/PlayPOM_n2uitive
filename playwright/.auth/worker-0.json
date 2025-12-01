@@ -1,0 +1,85 @@
+{
+  "cookies": [
+    {
+      "name": "_clck",
+      "value": "1pnd59q%5E2%5Eg1h%5E0%5E2161",
+      "domain": ".n2uitive.com",
+      "path": "/",
+      "expires": 1796117749,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "redirectTo",
+      "value": "%2F",
+      "domain": ".salish-qa.xyz.n2uitive.com",
+      "path": "/",
+      "expires": 1765186550.283,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_clsk",
+      "value": "kkhovm%5E1764581751288%5E1%5E1%5El.clarity.ms%2Fcollect",
+      "domain": ".n2uitive.com",
+      "path": "/",
+      "expires": 1764668151,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "token",
+      "value": "00b5e964dabc42d7d32cdb2086c249cdfc51ae607a7470688293789f2ecfd6711a",
+      "domain": ".salish-qa.xyz.n2uitive.com",
+      "path": "/",
+      "expires": 1765186552.58,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "path",
+      "value": "%2Flogout",
+      "domain": ".salish-qa.xyz.n2uitive.com",
+      "path": "/",
+      "expires": 1765186552.58,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "CLID",
+      "value": "a18e230ee09a4feb9b3d7f8abd33a55d.20251201.20261201",
+      "domain": "www.clarity.ms",
+      "path": "/",
+      "expires": 1796117749.303,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "SM",
+      "value": "T",
+      "domain": ".c.clarity.ms",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "MUID",
+      "value": "202E6ABC353A686728847C09313A6626",
+      "domain": ".clarity.ms",
+      "path": "/",
+      "expires": 1798277749.713,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": []
+}

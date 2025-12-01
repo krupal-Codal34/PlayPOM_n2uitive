@@ -115,6 +115,10 @@ export default class LoginPage extends CommonActions {
     const valid_EMessagePassword: string | null = await errorLocatorPassword.textContent();
 
     await this.ASSERT.hardAssertValue(valid_AMessagePassword, ValueAssertionType.TO_BE, valid_EMessagePassword, "Verification of Validation Message of Password");
+
+    const filePath = 'Data/Login/Upload/formdata.json'
+    const data = this.FILE.getStringData(filePath)
+    // console.log(data.get("claimNumber"))
   }
 
 }

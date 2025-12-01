@@ -9,6 +9,17 @@ import { ValueAssertionType, AssertionType } from "playpom";
 // import formdata from '@data/Login/Upload/formdata.json' assert { type: 'json' }
 import * as fs from 'fs/promises';
 
+export interface ViewDetails {
+  ClaimNumber: string;
+  INSfirstName: string;
+  INSlastName: string;
+  inter_FirstName: string;
+  inter_LastName: string;
+  DOL: string;
+  IntervieweeType: string;
+  Adjuster: "Arpit Desai";
+  Office: "Shared Services (Codal)";
+}
 
 export default class LoginPage extends CommonActions {
   protected initialPage: Page;
@@ -32,14 +43,14 @@ export default class LoginPage extends CommonActions {
     await this.UI.clickAndVerify(btn_uploadStatement, this.locators.num_claimNumber)
   }
 
-  async navigateToViewDetails(): Promise<void> {
+  async navigateToViewDetails(ClaimNumber: string): Promise<void> {
 
-    const formdata = await this.readJson('./data/Login/Upload/formdata.json');
+    // const formdata = await this.readJson('./data/Login/Upload/formdata.json');
 
     // Navigate to View Details
-    const btn_viewDetails: Locator = this.locators.btn_viewDetails(formdata.ClaimNumber);
+    const btn_viewDetails: Locator = this.locators.btn_viewDetails(ClaimNumber);
     await this.UI.waitForElement(btn_viewDetails, 30_000)
-    const verify_claimNumber: Locator = this.locators.verify_claimNumber(formdata.ClaimNumber).first();
+    const verify_claimNumber: Locator = this.locators.verify_claimNumber(ClaimNumber).first();
     await this.UI.clickAndVerify(btn_viewDetails, verify_claimNumber)
   }
 
@@ -71,26 +82,26 @@ export default class LoginPage extends CommonActions {
     await this.ASSERT.hardAssert(userName, AssertionType.TO_BE_VISIBLE, undefined, "'User Name' should be visible");
   }
 
-  async verifyFilledFormDetails(): Promise<void> {
+  async verifyFilledFormDetails(expectedData:ViewDetails): Promise<void> {
 
-    const formdata = await this.readJson('./data/Login/Upload/formdata.json');
+    // const formdata = await this.readJson('./data/Login/Upload/formdata.json');
     await this.closePopUp()
-    console.log(`Claim #: ${formdata.ClaimNumber}`)
+    console.log(`Claim #: ${expectedData.ClaimNumber}`)
 
-    const verify_claimNumber: Locator = this.locators.verify_claimNumber(formdata.ClaimNumber);
+    const verify_claimNumber: Locator = this.locators.verify_claimNumber(expectedData.ClaimNumber);
     await this.waitForClaimNumberWithRetries(verify_claimNumber, this.UI)
 
     // Verify Claim Number
     await this.UI.refreshPage()
     await this.UI.waitForElement(verify_claimNumber, 30_000)
     console.log("Claim Number is: " + verify_claimNumber.textContent())
-    console.log(`Claim #: ${formdata.ClaimNumber}`)
-    await this.ASSERT.hardAssert(verify_claimNumber, AssertionType.TO_HAVE_TEXT, `Claim #: ${formdata.ClaimNumber}`, "'Claim Number' should match");
+    console.log(`Claim #: ${expectedData.ClaimNumber}`)
+    await this.ASSERT.hardAssert(verify_claimNumber, AssertionType.TO_HAVE_TEXT, `Claim #: ${expectedData.ClaimNumber}`, "'Claim Number' should match");
 
     // Verify Interviewee
-    const verify_interviewee: Locator = this.locators.verify_interviewee(formdata.ClaimNumber);
+    const verify_interviewee: Locator = this.locators.verify_interviewee(expectedData.ClaimNumber);
     await this.UI.waitForElement(verify_interviewee, 30_000)
-    const fullInterviewee = `${formdata.inter_FirstName} ${formdata.inter_LastName}`
+    const fullInterviewee = `${expectedData.inter_FirstName} ${expectedData.inter_LastName}`
     const Full_Interviewee_Promise = await verify_interviewee.textContent();
     const Full_Interviewee = await Full_Interviewee_Promise.split('Interviewee:')[1]?.trim();
     await this.ASSERT.hardAssertValue(fullInterviewee, ValueAssertionType.TO_BE, Full_Interviewee, "'Interviewee Name' should match");
@@ -104,7 +115,7 @@ export default class LoginPage extends CommonActions {
     await this.ASSERT.hardAssertValue(fullInsured, ValueAssertionType.TO_BE, Full_Insured, "'Insured Name' should match");*/
 
     // Verify DOI
-    const DOI = await formdata.DOL
+    const DOI = await expectedData.DOL
     const originalDate = new Date(DOI); // This is "November 28, 2025" in UTC/browser time
 
     // 3. Format the original Date to "Month DD, YYYY"
@@ -121,7 +132,7 @@ export default class LoginPage extends CommonActions {
     // The final outputString will be "DOI: November 28, 2025"
     const outputKey = "DOI";
     const outputString = `${outputKey}: ${formattedDate}`
-    const verify_others: Locator = this.locators.verify_others(formdata.ClaimNumber);
+    const verify_others: Locator = this.locators.verify_others(expectedData.ClaimNumber);
     const DOI_Promise = await verify_others.textContent();
     const DOI_Insured = await DOI_Promise.split('DOI:')[1]?.trim();
     console.log("Date is: " + DOI_Insured)

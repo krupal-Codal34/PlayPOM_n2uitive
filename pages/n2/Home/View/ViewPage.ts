@@ -38,6 +38,10 @@ export default class ViewPage extends CommonActions {
    */
   async verifyDetails(expectedData: ViewDetails, audioFilePath: string): Promise<void> {
     // Verify Claim Number
+    const file = 'Data/Login/Upload/UploadStatusManagement.txt'
+    const dataMap: Map<string, string> = await this.FILE.getData(file);
+    // const data = this.FILE.getStringData(file);
+    console.log("This is txt file ClaimNumber: "+dataMap.get("ClaimNumber"))
     const claimNumberLocator: Locator = this.locators.claimNumberByText(expectedData.ClaimNumber).first();
     await this.ASSERT.hardAssert(claimNumberLocator, AssertionType.TO_HAVE_TEXT, `Claim #: ${expectedData.ClaimNumber}`, "'Claim Number' should match");
 
