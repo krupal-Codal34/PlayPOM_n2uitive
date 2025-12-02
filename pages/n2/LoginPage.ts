@@ -3,7 +3,7 @@ import CommonActions from "./CommonActions.js";
 import { getLoginPageLocators, type LoginPage_OR } from "./LoginPage_OR.js";
 import { Strings } from "./constants/Strings.js";
 import { AssertionType, ValueAssertionType } from "playpom";
-import {Timeout} from "./constants/Timeout.js"
+import { Timeout } from "./constants/Timeout.js";
 
 export default class LoginPage extends CommonActions {
   protected initialPage: Page;
@@ -13,6 +13,7 @@ export default class LoginPage extends CommonActions {
     super(page);
     this.initialPage = page;
     this.locators = getLoginPageLocators(page);
+    this.logger.info("LoginPage initialized");
   }
 
   /**
@@ -21,11 +22,13 @@ export default class LoginPage extends CommonActions {
    * @param baseURL
    */
   async launch(baseURL: string) {
+    this.logger.info(`launching and verifying the URL: ${baseURL}`);
     const currentURL: string = this.initialPage.url();
 
     if (currentURL.length > 0 && currentURL === baseURL) {
       this.logger.log("debug", `Already navigated to given URL - ${baseURL}`);
     } else {
+      this.logger.info(`Navigating to ${baseURL}`);
       await this.UI.navigateAndVerify(baseURL, this.locators.homeLogo);
     }
   }
@@ -36,17 +39,20 @@ export default class LoginPage extends CommonActions {
    * @param Enter Valid Password
    */
   async doLogin(username: string, password: string) {
-
+    this.logger.info(`Attempting to log in with username: ${username}`);
     const txt_username: Locator = this.locators.txt_userName;
     const txt_password: Locator = this.locators.txt_password;
     const btn_login: Locator = this.locators.btn_login;
 
-    await this.UI.waitForElement(txt_username, Timeout.High)
-    await this.UI.waitForElementToBe(txt_username, 'attached',Timeout.High)
+    await this.UI.waitForElement(txt_username, Timeout.High);
+    await this.UI.waitForElementToBe(txt_username, "attached", Timeout.High);
+    this.logger.info("Entering username and password");
     await txt_username.fill(username);
     await txt_password.fill(password);
-    await this.UI.waitForElementToBe(btn_login, 'visible',Timeout.High)
+    await this.UI.waitForElementToBe(btn_login, "visible", Timeout.High);
+    this.logger.info("Clicking login button");
     await this.UI.click(btn_login);
+    this.logger.info("Login submitted");
   }
 
   /**To do InValid Login with invalid Password
@@ -56,69 +62,96 @@ export default class LoginPage extends CommonActions {
    */
 
   async loginWithInvalidPassword(username: string, invalidPassword: string) {
+    this.logger.info("Performing login with invalid password.");
     // Use the core action method
     await this.doLogin(username, invalidPassword);
 
     // Verification step (expects failure)
+    this.logger.info("Verifying error message for invalid password.");
     const errorLocator: Locator = this.locators.errorLocator;
-    await errorLocator.waitFor({ state: 'visible' });
+    await errorLocator.waitFor({ state: "visible" });
 
     // Verify Error Message
-    const error_AMessage = Strings.INVALIDCREDS
+    const error_AMessage = Strings.INVALIDCREDS;
     const error_EMessage: string | null = await errorLocator.textContent();
-    await this.ASSERT.hardAssertValue(error_AMessage, ValueAssertionType.TO_BE, error_EMessage, "Verification of Error Message of InValid Password");
+    await this.ASSERT.hardAssertValue(
+      error_AMessage,
+      ValueAssertionType.TO_BE,
+      error_EMessage,
+      "Verification of Error Message of InValid Password",
+    );
   }
 
   /**To do InValid Login with invalid Password
-    *
-    * @param Enter Invalid Email
-    * @param Enter Valid Password
-    */
+   *
+   * @param Enter Invalid Email
+   * @param Enter Valid Password
+   */
 
   async loginWithUnregisteredUser(unregisteredUser: string, password: string) {
+    this.logger.info("Performing login with unregistered user.");
     // Use the core action method
     await this.doLogin(unregisteredUser, password);
 
     // Verification step (expects failure)
+    this.logger.info("Verifying error message for unregistered user.");
     const errorLocator: Locator = this.locators.errorLocator;
-    await errorLocator.waitFor({ state: 'visible' });
+    await errorLocator.waitFor({ state: "visible" });
 
     // Verify Error Message
-    const error_AMessage = Strings.INVALIDCREDS
+    const error_AMessage = Strings.INVALIDCREDS;
     const error_EMessage: string | null = await errorLocator.textContent();
-    await this.ASSERT.hardAssertValue(error_AMessage, ValueAssertionType.TO_BE, error_EMessage, "Verification of Error Message of Unregistered Email");
+    await this.ASSERT.hardAssertValue(
+      error_AMessage,
+      ValueAssertionType.TO_BE,
+      error_EMessage,
+      "Verification of Error Message of Unregistered Email",
+    );
   }
 
   /**To do InValid Login with invalid Password
-     *
-     * @param Empty UserName
-     * @param Empty Password
-     */
+   *
+   * @param Empty UserName
+   * @param Empty Password
+   */
 
   async loginWithEmptyCredentials() {
+    this.logger.info("Performing login with empty credentials.");
     // Use the core action method with empty strings
-    await this.doLogin('', '');
+    await this.doLogin("", "");
 
     // Verification step (expects failure)
+    this.logger.info("Verifying error messages for empty credentials.");
     const errorLocatorEmail: Locator = this.locators.emptyUserName;
     const errorLocatorPassword: Locator = this.locators.emptyPassword;
-    await errorLocatorEmail.waitFor({ state: 'visible' });
-    await errorLocatorPassword.waitFor({ state: 'visible' });
+    await errorLocatorEmail.waitFor({ state: "visible" });
+    await errorLocatorPassword.waitFor({ state: "visible" });
 
     // Verify Validation Messages
-    const valid_AMessageEmail = Strings.EMPTYUSERNAME
-    const valid_EMessageEmail: string | null = await errorLocatorEmail.textContent();
+    const valid_AMessageEmail = Strings.EMPTYUSERNAME;
+    const valid_EMessageEmail: string | null =
+      await errorLocatorEmail.textContent();
 
-    await this.ASSERT.hardAssertValue(valid_AMessageEmail, ValueAssertionType.TO_BE, valid_EMessageEmail, "Verification of Validation Message of Email");
+    await this.ASSERT.hardAssertValue(
+      valid_AMessageEmail,
+      ValueAssertionType.TO_BE,
+      valid_EMessageEmail,
+      "Verification of Validation Message of Email",
+    );
 
-    const valid_AMessagePassword = Strings.EMPTYPASSWORD
-    const valid_EMessagePassword: string | null = await errorLocatorPassword.textContent();
+    const valid_AMessagePassword = Strings.EMPTYPASSWORD;
+    const valid_EMessagePassword: string | null =
+      await errorLocatorPassword.textContent();
 
-    await this.ASSERT.hardAssertValue(valid_AMessagePassword, ValueAssertionType.TO_BE, valid_EMessagePassword, "Verification of Validation Message of Password");
+    await this.ASSERT.hardAssertValue(
+      valid_AMessagePassword,
+      ValueAssertionType.TO_BE,
+      valid_EMessagePassword,
+      "Verification of Validation Message of Password",
+    );
 
-    const filePath = 'Data/Login/Upload/formdata.json'
-    const data = this.FILE.getStringData(filePath)
+    const filePath = "Data/Login/Upload/formdata.json";
+    const data = this.FILE.getStringData(filePath);
     // console.log(data.get("claimNumber"))
   }
-
 }

@@ -1,14 +1,13 @@
 import { BasePage, getLogger, type Logger, type Page } from "playpom";
 import { type Common_OR, getCommonLocators } from "./Common_OR.js";
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from "fs/promises";
+import * as path from "path";
 
 export default class CommonActions extends BasePage {
   protected initialPage: Page;
   protected commonLocators: Common_OR;
   protected logger: Logger;
   private uniqueTag = "[COMMON-ACTION]";
-
 
   constructor(page: Page) {
     // Initialization if needed
@@ -18,21 +17,20 @@ export default class CommonActions extends BasePage {
     this.commonLocators = getCommonLocators(page);
   }
 
+  /**
+   * Stores a JavaScript object or array into a pretty-printed JSON file.
+   * @param data The object or array to store.
+   * @param fileName The name of the file (e.g., 'testResults.json').
+   * @param outputDir The directory to save the file in (default: 'test-output').
+   */
 
   /**
- * Stores a JavaScript object or array into a pretty-printed JSON file.
- * @param data The object or array to store.
- * @param fileName The name of the file (e.g., 'testResults.json').
- * @param outputDir The directory to save the file in (default: 'test-output').
- */
-
-  /**
-     * Write data to JSON file safely.
-     *
-     * @param data         Object or array to save
-     * @param fileName     File name (auto-add .json)
-     * @param outputDir    Target folder (default: test-output)
-     *//*
+   * Write data to JSON file safely.
+   *
+   * @param data         Object or array to save
+   * @param fileName     File name (auto-add .json)
+   * @param outputDir    Target folder (default: test-output)
+   */ /*
   async writeDataToJson(
     data: object | Array<any>,
     fileName: string,
@@ -81,7 +79,7 @@ export default class CommonActions extends BasePage {
    *
    * @param fileName   JSON file name
    * @param outputDir  Directory (default: test-output)
-   *//*
+   */ /*
    async readJson(
     fileName: string,
     outputDir: string = './'
@@ -106,13 +104,8 @@ export default class CommonActions extends BasePage {
   /**
    * Generate unique JSON filename to avoid parallel-worker conflicts.
    * Recommended for Playwright parallel runs.
-   *//*
+   */ /*
   async uniqueFile(testId: string, baseName: string) {
     return `${baseName}_${testId}.json`;
   }*/
 }
-
-
-
-
-

@@ -11,8 +11,6 @@ export interface HomePage_OR {
   btn_uploadStatement: Locator;
   uploadFile: Locator;
   num_claimNumber: Locator;
-  
-
 
   // Dynamic locators (functions)
   verify_claimNumber: (claimNumber: string) => Locator;
@@ -33,7 +31,9 @@ export function getHomePageLocators(page: Page): HomePage_OR {
     btn_login: page.getByTestId("login-button"),
     title: page.locator("//h1[contains(text(),'Recent')]"),
     btn_logout: page.getByTestId("logout-btn-desktop"),
-    btn_uploadStatement: page.locator("//p[@class='text-tertiary text-sm hidden font-bold leading-4 lg:block' or contains(text(),'Upload')]"),
+    btn_uploadStatement: page.locator(
+      "//p[@class='text-tertiary text-sm hidden font-bold leading-4 lg:block' or contains(text(),'Upload')]",
+    ),
     uploadFile: page.locator("//input[@id='dropzone-file']"),
     num_claimNumber: page.locator("//input[@name='claimNumber']"),
     verify_claimNumber: (claimNumber: string) =>
@@ -42,8 +42,10 @@ export function getHomePageLocators(page: Page): HomePage_OR {
       page.locator(`//p[text()='${claimNumber}']//following::p[1]`),
     verify_others: (claimNumber: string) =>
       page.locator(`//p[text()='${claimNumber}']//following::p[2]`),
-    closePopUp: page.getByText('Close'),
+    closePopUp: page.getByText("Close"),
     btn_viewDetails: (claimNumber: string) =>
-      page.locator(`//p[text()='${claimNumber}']//following::a[1][@data-testid='view-details']`),
+      page.locator(
+        `//p[text()='${claimNumber}']//following::a[1][@data-testid='view-details']`,
+      ),
   };
 }

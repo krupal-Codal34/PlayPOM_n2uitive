@@ -14,7 +14,7 @@ export interface ViewPage_OR {
   officeValue: Locator;
   audioDurationText: Locator;
 
-  /** 
+  /**
    * A dynamic locator function to find a claim number element by its text.
    * @param claimNumber The exact claim number text to locate.
    */
@@ -31,15 +31,21 @@ export function getViewPageLocators(page: Page): ViewPage_OR {
   return {
     siteLogo: page.locator("[alt='site logo']").first(),
     insuredValue: page.locator("(//p[text()='Insured']//following::p[1])[1]"),
-    intervieweeValue: page.locator("(//p[text()='Interviewee']//following::p[1])[1]"),
-    intervieweeTypeValue: page.locator("(//p[text()='Interviewee Type']//following::p[1])[1]"),
-    dateOfIncidentValue: page.locator("(//p[text()='Date of Incident']//following::p[1])[1]"),
+    intervieweeValue: page.locator(
+      "(//p[text()='Interviewee']//following::p[1])[1]",
+    ),
+    intervieweeTypeValue: page.locator(
+      "(//p[text()='Interviewee Type']//following::p[1])[1]",
+    ),
+    dateOfIncidentValue: page.locator(
+      "(//p[text()='Date of Incident']//following::p[1])[1]",
+    ),
     adjusterValue: page.locator("(//p[text()='Adjuster']//following::p[1])[1]"),
     officeValue: page.locator("(//p[text()='Office']//following::p[1])[1]"),
 
     claimNumberByText: (claimNumber: string) =>
       page.locator(`//p[text()='${claimNumber}']`),
-    
+
     audioDurationText: page.locator("//audio[@id='audio-tag']/following::p[2]"),
   };
 }

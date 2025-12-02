@@ -4,7 +4,16 @@ import typescriptParser from "@typescript-eslint/parser";
 import pluginUnusedImports from "eslint-plugin-unused-imports";
 const { configs: typescriptConfigs } = typescript;
 
-const prefixes = ["@HEALTHCHECK", "@UNIT", "@REGRESSION", "@SANITY", "@CRITICAL", "@UI", "@API", "@PERF"];
+const prefixes = [
+  "@HEALTHCHECK",
+  "@UNIT",
+  "@REGRESSION",
+  "@SANITY",
+  "@CRITICAL",
+  "@UI",
+  "@API",
+  "@PERF",
+];
 const prefixesPattern = prefixes.map((p) => `(?:${p})`).join("|");
 // test: optional prefix followed by capital letter
 const testTitlePattern = `^(?:(${prefixesPattern})\\s*)?[A-Z]`;
@@ -61,14 +70,20 @@ export default [
       "playwright/prefer-hooks-on-top": "error",
       "playwright/prefer-locator": "error",
       "playwright/expect-expect": "off",
-      "playwright/require-top-level-describe": ["warn", { maxTopLevelDescribes: 2 }],
+      "playwright/require-top-level-describe": [
+        "warn",
+        { maxTopLevelDescribes: 2 },
+      ],
       "playwright/valid-describe-callback": "error",
       "playwright/no-networkidle": "warn",
       "playwright/valid-title": [
         "error",
         {
           mustMatch: {
-            describe: [new RegExp(describeTitlePattern, "u").source, "Describe title must start with a capital letter"],
+            describe: [
+              new RegExp(describeTitlePattern, "u").source,
+              "Describe title must start with a capital letter",
+            ],
             test: [
               new RegExp(testTitlePattern, "u").source,
               `Test title must start with a capital letter, optionally after one of these tags: ${prefixes.join(", ")}`,

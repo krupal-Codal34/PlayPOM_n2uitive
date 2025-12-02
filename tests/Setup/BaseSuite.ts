@@ -5,9 +5,12 @@ import path from "path";
 import fs from "fs"; // Import Node.js 'fs' module
 import { AssertionType } from "playpom";
 
-
 // Define the filename for the pre-login state
-const PRE_LOGIN_STATE_FILE = path.join(process.cwd(), 'playwright', 'preLoginState.json');
+const PRE_LOGIN_STATE_FILE = path.join(
+  process.cwd(),
+  "playwright",
+  "preLoginState.json",
+);
 
 // Define extended type
 type ExtendedTest = typeof test & {
@@ -21,7 +24,7 @@ const baseFixtures = test.extend<{
   preLoginStateFile: [
     // Use an array to define the value and the scope
     PRE_LOGIN_STATE_FILE,
-    { scope: 'test', auto: true } // 'worker' scope ensures it's created once per worker
+    { scope: "test", auto: true }, // 'worker' scope ensures it's created once per worker
   ],
 });
 
@@ -52,84 +55,86 @@ const rawProjectTest = baseFixtures.extend<{ page: Page }>({
 // #IMP# - To be used for the scenarios needs to be performed before login
 export const projectTest = rawProjectTest;
 
-
-
 ///### Define authenticated test with iteration feature ///
 // NOTE: This test extends projectTest, so the pre-login state is already loaded/saved.
-const rawAuthenticatedTest = projectTest.extend<{}, { workerStorageState: string }>({
-
+const rawAuthenticatedTest = projectTest.extend<
+  {},
+  { workerStorageState: string }
+>({
   storageState: ({ workerStorageState }, use) => {
     // 'workerStorageState' holds the path to the auth file
     return use(workerStorageState);
   },
 
-  workerStorageState: [async ({ browser }, use) => {
-    // Use parallelIndex as a unique identifier for each worker.
-    // This ensures each parallel worker has its own independent login session.
-    const workerIndex = test.info().parallelIndex;
+  workerStorageState: [
+    async ({ browser }, use) => {
+      // Use parallelIndex as a unique identifier for each worker.
+      // This ensures each parallel worker has its own independent login session.
+      const workerIndex = test.info().parallelIndex;
 
-    // async ({ page, DECRYPT, context, logger }, use) => {
-    // Define a separate login state file (optional, but good practice)
-    // const AUTH_STATE_FILE = path.join(process.cwd(), 'playwright', 'authState.json');
-    const fileName = path.resolve('./playwright',
-      `.auth/worker-${workerIndex}.json`
-    );
+      // async ({ page, DECRYPT, context, logger }, use) => {
+      // Define a separate login state file (optional, but good practice)
+      // const AUTH_STATE_FILE = path.join(process.cwd(), 'playwright', 'authState.json');
+      const fileName = path.resolve(
+        "./playwright",
+        `.auth/worker-${workerIndex}.json`,
+      );
 
-    // Check if the auth state file already exists
-    if (fs.existsSync(fileName)) {
-      console.log(`Worker ${workerIndex}: Reusing existing login state from ${fileName}`);
-      await use(fileName); // Pass the existing file path to the storageState fixture
-      return;
-    }
+      // Check if the auth state file already exists
 
-    console.log(`Worker ${workerIndex}: Performing one-time login...`);
+      // IMPORTANT: Authenticate in a clean environment by unsetting storage state.
+      // This ensures the login is not affected by any previous runs.
+      const page = await browser.newPage();
 
-    // IMPORTANT: Authenticate in a clean environment by unsetting storage state.
-    // This ensures the login is not affected by any previous runs.
-    const page = await browser.newPage();
+      //  if (fs.existsSync(fileName) && page.getByText("Your session has timed out, please log in again").waitFor({ state: "attached", timeout:3000 })) {
+      //   console.log(`Worker ${workerIndex}: Reusing existing login state from ${fileName}`);
+      //   await use(fileName); // Pass the existing file path to the storageState fixture
+      //   return;
+      // }
 
-    // **TODO: ADD YOUR LOGIN LOGIC HERE**
-    // Example:
-    // await page.goto("/login");
-    // await page.fill("#username", "myUser");
-    // await page.fill("#password", DECRYPT("encryptedPassword"));
-    // await page.click("#login-button");
-    // await page.waitForURL("/dashboard");
+      console.log(`Worker ${workerIndex}: Performing one-time login...`);
 
-    await page.goto('https://salish-qa.xyz.n2uitive.com/login?redirectTo=/')
+      // **TODO: ADD YOUR LOGIN LOGIC HERE**
+      // Example:
+      // await page.goto("/login");
+      // await page.fill("#username", "myUser");
+      // await page.fill("#password", DECRYPT("encryptedPassword"));
+      // await page.click("#login-button");
+      // await page.waitForURL("/dashboard");
 
-    const txt_username = page.locator("[name='username']");
-    const txt_password = page.locator("[name='password']");
-    const btn_login = page.getByTestId("login-button");
+      await page.goto("https://salish-qa.xyz.n2uitive.com/login?redirectTo=/");
 
-    await txt_username.fill('adesai@codal.com');
-    await txt_password.fill('Codal@123');
-    await btn_login.click();
-    const homeLogo = page.locator("[alt='site logo']").first();
-    await expect(homeLogo).toBeVisible();
-    // await ASSERT.hardAssert(homeLogo, AssertionType.TO_BE_VISIBLE, undefined, "Home Button should be visible");
+      const txt_username = page.locator("[name='username']");
+      const txt_password = page.locator("[name='password']");
+      const btn_login = page.getByTestId("login-button");
 
+      await txt_username.fill("adesai@codal.com");
+      await txt_password.fill("Codal@123");
+      await btn_login.click();
+      const homeLogo = page.locator("[alt='site logo']").first();
+      await expect(homeLogo).toBeVisible();
+      // await ASSERT.hardAssert(homeLogo, AssertionType.TO_BE_VISIBLE, undefined, "Home Button should be visible");
 
-    console.log(
-      // `--- Ending Login Fixture Teardown for user: ${username} ---`
-    );
+      console
+        .log
+        // `--- Ending Login Fixture Teardown for user: ${username} ---`
+        ();
 
-    // 3. Save the full authenticated context state
-    // await context.storageState({ path: AUTH_STATE_FILE });
-    await page.context().storageState({ path: fileName });
-    console.log(`Worker ${workerIndex}: Login state saved to ${fileName}`);
-    // Close the temporary page used for login
-    await page.close();
+      // 3. Save the full authenticated context state
+      // await context.storageState({ path: AUTH_STATE_FILE });
+      await page.context().storageState({ path: fileName });
+      console.log(`Worker ${workerIndex}: Login state saved to ${fileName}`);
+      // Close the temporary page used for login
+      await page.close();
 
-    // Pass the new file path to the actual tests
-    await use(fileName);
-  },
-  {
-    scope: 'worker', // Runs once per worker process (i.e., once for a set of parallel tests)
-    auto: true,
-  }],
-
-
+      // Pass the new file path to the actual tests
+      await use(fileName);
+    },
+    {
+      scope: "worker", // Runs once per worker process (i.e., once for a set of parallel tests)
+      auto: true,
+    },
+  ],
 });
 
 // Reattach iterate again

@@ -1,4 +1,1 @@
-export enum Strings {
- 
-  
-}
+export enum Strings {}

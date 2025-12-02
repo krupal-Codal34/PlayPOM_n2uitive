@@ -17,9 +17,9 @@ const reportConfig: OrtoniReportConfig = {
   folderPath: "./generated/reports/ortoni-html",
   filename: "report.html",
   logo: "gocodal.jpg",
-  title: "MCCPD Test Automation POC Execution Report",
+  title: "n2uitive Test Automation POC Execution Report",
   showProject: true,
-  projectName: "MCCPD-Test-Automation",
+  projectName: "n2uitive-Test-Automation",
   testType: "e2e",
   authorName: os.userInfo().username,
   base64Image: false,
@@ -27,7 +27,8 @@ const reportConfig: OrtoniReportConfig = {
   meta: {
     Framework: "PlayPOM",
     version: "06182025",
-    description: "This test automation execution contains the UI Functional verification scenarios for the POC",
+    description:
+      "This test automation execution contains the UI Functional verification scenarios for the POC",
     release: "1.0.0",
     platform: os.type(),
   },
@@ -36,12 +37,14 @@ const reportConfig: OrtoniReportConfig = {
 /** For our custom framework PlayPOM */
 
 export const playPOMConfig: PlayPOMConfig = {
-  notificationFromEmail: process.env.notificationFromEmail || "<local_update_notification_email>",
-  notificationFromPwd: process.env.notificationFromPwd || "<local_update_notification_pwd>",
+  notificationFromEmail:
+    process.env.notificationFromEmail || "<local_update_notification_email>",
+  notificationFromPwd:
+    process.env.notificationFromPwd || "<local_update_notification_pwd>",
   // sendEmailAddresses - if we don't want to have the email, have the empty array for it
-  sendEmailAddresses: JSON.parse(process.env.sendEmailAddressesArray ?? "null") || [
-    "playpom-test-executio-aaaaqt6tb5gjnv2d3eiluxt7vi@codal.slack.com",
-  ], // it will notify the core team
+  sendEmailAddresses: JSON.parse(
+    process.env.sendEmailAddressesArray ?? "null",
+  ) || ["playpom-test-executio-aaaaqt6tb5gjnv2d3eiluxt7vi@codal.slack.com"], // it will notify the core team
 };
 
 /**
@@ -99,7 +102,7 @@ export default defineConfig({
     // Slow down actions by 500ms
     launchOptions: {
       args: ["--start-maximized"],
-      slowMo: 500,  
+      slowMo: 500,
     },
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
@@ -119,7 +122,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: {
-          args: ['--start-maximized'], 
+          args: ["--start-maximized"],
         },
         // Tell Playwright to use the full size of the maximized window
         // viewport: null,

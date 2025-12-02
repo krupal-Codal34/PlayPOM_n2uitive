@@ -9,5 +9,5 @@ export enum Strings {
   OURMISSION = "Our Mission",
   VIEWALLFAQS = "View all FAQs",
   CLICKHERE = "Click here",
-  HREF = "href"
+  HREF = "href",
 }

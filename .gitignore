@@ -7,7 +7,7 @@ node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
-/playwright/.cache/
+/playwright/.auth/
 /generated/result_files/
 /generated/logs/
 /generated/reports/HTML_Report/
@@ -20,3 +20,6 @@ node_modules/
 # distribution & local debugging config files
 /dist
 /.vscode
+# for credentials to be ignored in commit and need to be created in local
+/Data/Login/Upload/UploadStatusManagement.properties
+/Data/Login/Login.properties
