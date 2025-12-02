@@ -21,5 +21,6 @@ node_modules/
 /dist
 /.vscode
 # for credentials to be ignored in commit and need to be created in local
+/Data/Login/Login.properties
 /Data/Login/Upload/UploadStatusManagement.properties
 /Data/Login/Login.properties
